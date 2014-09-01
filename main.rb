@@ -8,7 +8,7 @@ CONFIG = YAML::load_file(File.join(File.dirname(File.expand_path(__FILE__)), 'co
 # adds methods like constantize and pluralize to String
 Sequel.extension :inflector
 
-# lets us use serialized fields in the db -- ie store as json, retrieve as hash
+# lets us use serialized fields in the db -- ie store as json, retrieve as hash, array, etc.
 require 'sequel/plugins/serialization'
 
 # serializes any Sequel object as json, using klass_instance.to_json
