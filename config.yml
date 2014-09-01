@@ -1,5 +1,6 @@
 # resources you want to expose in the api
 :permitted_resources: ["products"]
+# options for the resources you want to expose in the api
 :resources:
   :products:
     :collection:
@@ -9,11 +10,4 @@
     :get:
       :except: ["created_at", "updated_at"]
       :root: false
-    :post:
-      :except: ["created_at", "updated_at"]
-    :put:
-      :except: ["created_at", "updated_at"]
-    :delete:
-
-    
   
