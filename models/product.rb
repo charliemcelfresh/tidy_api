@@ -8,8 +8,4 @@ class Product < Sequel::Model
   serialize_attributes :json, :dimensions
   serialize_attributes :json, :software_electrical
 
-	def m
-		"here"
-	end
-  
 end
