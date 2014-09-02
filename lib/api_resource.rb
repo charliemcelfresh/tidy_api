@@ -6,23 +6,47 @@ class ApiResource
     @name, @model_klass, @name_as_string = name, name.to_s.singularize.capitalize.constantize, name.to_s
   end
   
-	def collection_options(http_method)
-		self.class.resources_config[name][:collection][http_method]
+	def options(http_verb)
+		self.class.resources_config[name][http_verb]
 	end
 	
-	def options(http_method)
-		self.class.resources_config[name][http_method]
+	def collection?
+		return true if self.class.resources_config[name][:collection]
+		false
+	end
+	
+	def get?
+		return true if self.class.resources_config[name][:get]
+		false
+	end
+	
+	def post?
+		return true if self.class.resources_config[name][:post]
+		false
+	end
+	
+	def put?
+		return true if self.class.resources_config[name][:put]
+		false
+	end
+	
+	def delete?
+		self.class.resources_config[name][:delete]
 	end
   
   def self.run
-    permitted_resources.each do |resource|      
-      Sinatra::Application.get "/api/#{resource.name_as_string}" do
-        resource.model_klass.to_json(resource.collection_options(:get))
-      end
-      Sinatra::Application.get "/api/#{resource.name_as_string}/:id" do
-        r = resource.model_klass.where(:id => params[:id]).first || halt(404)
-        r.to_json(resource.options(:get))
-      end
+    permitted_resources.each do |resource|
+			if resource.collection?
+	      Sinatra::Application.get "/api/#{resource.name_as_string}" do
+	        resource.model_klass.to_json(resource.options(:get))
+	      end
+			end
+			if resource.get?
+	      Sinatra::Application.get "/api/#{resource.name_as_string}/:id" do
+	        r = resource.model_klass.where(:id => params[:id]).first || halt(404)
+	        r.to_json(resource.options(:get))
+	      end
+			end
     end
   end
 
@@ -31,16 +55,16 @@ class ApiResource
   end
   
 	def self.resources_config
-		ApiResource.symbolize_every_string(CONFIG[:resources])
+		ApiResource.symbolize_strings(CONFIG[:resources])
 	end
   
 	# convert all strings in the RESOURCES constant to symbols, so we can use them
 	# as arguments in the to_json methods in the self.run method
-	def self.symbolize_every_string(resources)
+	def self.symbolize_strings(resources)
 		h = {}
 		resources.each do |k, v|
 			if v.kind_of?(Hash)
-				h[k] = symbolize_every_string(v)
+				h[k] = symbolize_strings(v)
 			elsif v.kind_of?(Array)
 				h[k] = v.map{|e| e.kind_of?(String) ? e.to_sym : e}
 			elsif v.kind_of?(String)
