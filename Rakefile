@@ -1,7 +1,6 @@
 task :environment do
   require File.expand_path("main", File.dirname(__FILE__))
 end
-
 # run like RACK_ENV=test bundle exec rake db:migrate. If you don't specify a RACK_ENV, development
 # is used
 namespace :db do
@@ -23,7 +22,6 @@ namespace :db do
     end
   end
 end
-
 # generate a blank datetime-named migration, like rake generate:migrateion[create_users]
 namespace :generate do
   desc 'Generate a timestamped, empty Sequel migration.'
