@@ -1,5 +1,3 @@
-# resources you want to expose in the api
-:permitted_resources: ["posts"]
 # options for the resources you want to expose in the api
 :resources:
   :posts:
@@ -16,5 +14,15 @@
           :only: ["comment"]
       :root: true
     :post:
+      :permitted_attributes: ["title"]
+    :delete:
       :only: ["title"]
+    :put:
+      :permitted_attributes: ["title"]
+  :comments:
+    :get:
+      :only: ["id", "comment"]
+      :root: true
+    :collection:
+      :only: ["id", "comment"]
       :root: true
