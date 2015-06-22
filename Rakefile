@@ -10,18 +10,18 @@ namespace :db do
     ENV['RACK_ENV'] ? db_name = "tidy_api_#{ENV['RACK_ENV']}" : db_name = "tidy_api_development"
     system "sequel -m db/migrations/ mysql2://root@localhost/#{db_name}"
   end
-	task :seed => :environment do
-		["Post One", "Post Two"].each do |title|
-			Post.create(:title => title)
-		end
-		Post.each do |post|
-			(1..3).each do |i|
-				c = Comment.new(:post_id => post.id)
-				c.comment = "This is comment #{i} for #{post.title}"
-				c.save
-			end
-		end
-	end
+  task :seed => :environment do
+    ["Post One", "Post Two"].each do |title|
+      Post.create(:title => title)
+    end
+    Post.each do |post|
+      (1..3).each do |i|
+        c = Comment.new(:post_id => post.id)
+        c.comment = "This is comment #{i} for #{post.title}"
+        c.save
+      end
+    end
+  end
 end
 
 # generate a blank datetime-named migration, like rake generate:migrateion[create_users]
