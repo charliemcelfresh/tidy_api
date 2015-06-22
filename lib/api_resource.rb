@@ -1,80 +1,74 @@
 class ApiResource
-  attr_reader :name, :model_klass, :name_as_string
+  attr_reader :name, :http_verbs
   
-  def initialize(name)
-    @name, @model_klass, @name_as_string = name, name.to_s.singularize.capitalize.constantize, name.to_s
-  end
-  
-  def options(http_verb)
-    self.class.resources_config[name][http_verb]
+  def initialize(name, http_verbs)
+    @name, @http_verbs = name, http_verbs
   end
 
-  ['collection', 'get', 'post', 'put', 'delete'].each do |http_verb|
-    method_name = "#{http_verb}?".to_sym
-    define_method(method_name) do
-      self.class.resources_config[name] && self.class.resources_config[name][http_verb.to_sym]
-    end
-  end  
+  def model_klass
+  	name.to_s.singularize.capitalize.constantize
+  end
+
+  def options(http_verb)
+    self.class.resources_config[name.to_sym][http_verb]
+  end
+
+  def self.resources_config
+  	CONFIG[:resources]
+  end
   
   def self.run
     permitted_resources.each do |api_resource|
-      if api_resource.collection?
-        Sinatra::Application.get "/api/#{api_resource.name_as_string}" do
+      if api_resource.http_verbs.include?(:collection)
+        Sinatra::Application.get "/api/#{api_resource.name.to_s}" do
           api_resource
             .model_klass
-            .api_collection
+            .api_collection # specify includes here
             .to_json(api_resource.options(:collection))
         end
       end
-      if api_resource.get?
-        Sinatra::Application.get "/api/#{api_resource.name_as_string}/:id" do
+
+      if api_resource.http_verbs.include?(:get)
+        Sinatra::Application.get "/api/#{api_resource.name.to_s}/:id" do
           r = api_resource
             .model_klass
             .where(:id => params[:id]).first || halt(404)
           r.to_json(api_resource.options(:get))
         end
       end
-      # if api_resource.post?
-      #   Sinatra::Application.post "/api/#{resource.name_as_string}" do
-      #     req = JSON.parse(request.body.read)
-      #     puts req
-      #     # r = resource.model_klass.from_json(req.to_json)
-      #     # r.save
-      #     r = resource.model_klass.create(
-      #       req
-      #     )
-      #     status 201
-      #     r.to_json
-      #   end
-      # end
-      # 
-      # put '/api/movies/:id' do
-      #   body = JSON.parse request.body.read
-      #   movie ||= Movie.get(params[:id]) || halt(404)
-      #   halp 500 unless movie.update(
-      #     title:    body['title'],
-      #     director: body['director'],
-      #     synopsis: body['synopsis'],
-      #     year:     body['year']
-      #   )
-      #   format_response(movie, request.accept)
-      # end
-      # 
-      if api_resource.delete?
-        delete '/api/movies/:id' do
-          r = api_resource.model_klass.where(id: params[:id]).first || halt 404
-          halt 500 unless r.destroy
+
+      if api_resource.http_verbs.include?(:post)
+        Sinatra::Application.post "/api/#{api_resource.name.to_s}" do
+          r = api_resource.model_klass.new(ApiResource.permitted_attributes(params, :post, api_resource))
+          halt(500) unless r.save
+          status 201
+        end
+      end
+      
+      if api_resource.http_verbs.include?(:put)
+        Sinatra::Application.put "/api/#{api_resource.name.to_s}/:id" do
+          halt(404) unless r = api_resource.model_klass.where(id: params[:id]).first
+  				r.set(ApiResource.permitted_attributes(params, :put, api_resource))
+          halt(500) unless r.save
+          status 200
+        end
+      end
+            
+      if api_resource.http_verbs.include?(:delete)
+        Sinatra::Application.delete "/api/#{api_resource.name.to_s}/:id" do
+          r = api_resource.model_klass.where(id: params[:id]).first || halt(404)
+          halt(500) unless r.destroy
         end
       end
     end
   end
-
-  def self.permitted_resources
-    resources_config.keys.map{|r| self.new(r)}
+  # permitted_attributes put / post for each model class
+  def self.permitted_attributes(params, http_verb, api_resource)
+  	params.select{|k, v| api_resource.options(http_verb)[:permitted_attributes].include?(k)}
   end
-  
-  def self.resources_config
-    ApiResource.symbolize_strings(CONFIG[:resources])
+  # A list of all permitted resources, with their permitted http_verbs
+  def self.permitted_resources
+    CONFIG[:resources].map{|k, v| ApiResource.new(k, v.keys)}
   end
   # convert all strings in the RESOURCES constant to symbols, so we can use them
   # as arguments in the to_json methods in the self.run method
