@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
-
 gem 'pry'
+gem 'racksh'
 gem 'sequel'
 gem 'sinatra'
 gem 'sinatra-sequel'

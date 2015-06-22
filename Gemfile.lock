@@ -4,7 +4,7 @@ GEM
     bacon (1.2.0)
     coderay (1.1.0)
     method_source (0.8.2)
-    mysql2 (0.3.16)
+    mysql2 (0.3.18)
     pry (0.10.1)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -12,6 +12,11 @@ GEM
     rack (1.5.2)
     rack-protection (1.5.1)
       rack
+    rack-test (0.6.2)
+      rack (>= 1.0)
+    racksh (1.0.0)
+      rack (>= 1.0)
+      rack-test (>= 0.5)
     sequel (4.13.0)
     sinatra (1.4.4)
       rack (~> 1.4)
@@ -30,6 +35,7 @@ PLATFORMS
 DEPENDENCIES
   mysql2
   pry
+  racksh
   sequel
   sinatra
   sinatra-sequel

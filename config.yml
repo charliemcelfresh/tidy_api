@@ -1,12 +1,20 @@
 # resources you want to expose in the api
-:permitted_resources: ["products"]
+:permitted_resources: ["posts"]
 # options for the resources you want to expose in the api
 :resources:
-  :products:
+  :posts:
     :collection:
-      :except: ["created_at", "updated_at"]
-      :root: false
+      :only: ["id", "title", "derived_method"]
+      :include:
+        :comments:
+          :only: ["comment"]
+      :root: true
     :get:
-      :except: ["created_at", "updated_at"]
-      :root: false
-  
+      :only: ["id", "title"]
+      :include:
+        :comments:
+          :only: ["comment"]
+      :root: true
+    :post:
+      :only: ["title"]
+      :root: true
