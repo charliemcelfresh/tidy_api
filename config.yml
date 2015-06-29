@@ -1,28 +1,35 @@
 # options for the resources you want to expose in the api
 :resources:
   :posts:
-    :collection:
-      :only: ["id", "title", "derived_method"]
-      :include:
-        :comments:
-          :only: ["comment"]
-      :root: true
     :get:
-      :only: ["id", "title"]
-      :include:
-        :comments:
-          :only: ["comment"]
-      :root: true
+      :eager: 'comments'
+      :json_options:
+        :only: ['id', 'title']
+        :include:
+          :comments:
+            :only: ['comment']
+        :root: true
+    :get_collection:
+      :eager: 'comments'
+      :json_options:
+        :only: ['id', 'title', 'derived_method']
+        :include:
+          :comments:
+            :only: ['id', 'comment']
+        :root: true
     :post:
-      :permitted_attributes: ["title"]
-    :delete:
-      :only: ["title"]
+      :permitted_attributes: ['title']
     :put:
-      :permitted_attributes: ["title"]
+      :permitted_attributes: ['title']
+    :delete:
   :comments:
     :get:
-      :only: ["id", "comment"]
-      :root: true
-    :collection:
-      :only: ["id", "comment"]
-      :root: true
+      :eager: 'post'
+      :json_options:
+        :only: ['id', 'comment']
+        :root: true
+    :get_collection:
+      :eager: 'post'
+      :json_options:
+        :only: ['id', 'comment']
+        :root: true
