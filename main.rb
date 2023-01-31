@@ -14,18 +14,18 @@ Sequel::Model.plugin :json_serializer
 Sequel::Model.plugin :timestamps, :update_on_create => true
 
 configure :development do
-  DB = Sequel.connect(:adapter=>'mysql2',
+  DB = Sequel.connect(:adapter=>'postgres',
                       :host=>'localhost',
                       :database=>'tidy_api_development',
-                      :user=>'root',
+                      :user=>'postgres',
                       logger: Logger.new($stdout))
 end
 
 configure :test do
-  DB = Sequel.connect(:adapter=>'mysql2',
+  DB = Sequel.connect(:adapter=>'postgres',
                       :host=>'localhost',
                       :database=>'tidy_api_test',
-                      :user=>'root',
+                      :user=>'postgres',
                       logger: Logger.new($stdout))
 end
 # require all model, lib, etc. ruby files, and all files in their subdirs, if any

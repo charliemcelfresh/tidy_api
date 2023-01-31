@@ -7,7 +7,7 @@ namespace :db do
   desc "run migrations based on env"
   task :migrate do |t, args|
     ENV['RACK_ENV'] ? db_name = "tidy_api_#{ENV['RACK_ENV']}" : db_name = "tidy_api_development"
-    system "sequel -m db/migrations/ mysql2://root@localhost/#{db_name}"
+    system "sequel -m db/migrations/ postgres://postgres:postgres@postgres/#{db_name}"
   end
   task :seed => :environment do
     ["Post One", "Post Two"].each do |title|
