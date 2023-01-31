@@ -1,8 +1,7 @@
 source 'https://rubygems.org'
+gem 'pg'
 gem 'pry'
-gem 'racksh'
+gem 'puma'
+gem 'rack'
 gem 'sequel'
-gem 'sinatra'
-gem 'sinatra-advanced-routes', :require => 'sinatra/advanced_routes'
-gem 'sinatra-sequel'
-gem 'mysql2'
+gem 'sinatra', "~> 3.0"

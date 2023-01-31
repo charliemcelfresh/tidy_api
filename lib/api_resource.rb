@@ -69,21 +69,4 @@ class ApiResource
   def self.permitted_api_resources
     CONFIG[:resources].map{|k, v| ApiResource.new(k, v.keys)}
   end
-  # utility method that converts all strings in the RESOURCES constant to symbols
-  # so we can use them as arguments in the to_json methods in the self.run method
-  def self.symbolize_strings(resources)
-    h = {}
-    resources.each do |k, v|
-      if v.kind_of?(Hash)
-        h[k] = symbolize_strings(v)
-      elsif v.kind_of?(Array)
-        h[k] = v.map{|e| e.kind_of?(String) ? e.to_sym : e}
-      elsif v.kind_of?(String)
-        h[k] = v.to_sym
-      else
-        h[k] = v
-      end
-    end
-    h
-  end
 end
